@@ -30,9 +30,61 @@ Without this service, Android wouldn’t be able to manage Bluetooth devices, tu
 -------------------------------------------------------------------------------------------------------------------------------------------------
 AdapterService.java — Line-by-Line Explanation
 -----------------------------------------------
+📦 1. Package Declaration
+ package com.android.bluetooth.btservice;   ===> Declares the package this file belongs to.
 
+btservice stands for "Bluetooth service" — this is the backend logic handling Bluetooth system-level operations.
+-----------------------------------------------------------------------------------------------------------------
+import android.app.Application;    ===> 
+import android.app.Service;
+import android.bluetooth.BluetoothAdapter;  ==> Main class to control the local Bluetooth adapter (e.g. enabling/disabling).
+import android.bluetooth.BluetoothDevice;  ==> Represents a remote Bluetooth device (used for pairing, bonding, etc.).
+import android.bluetooth.BluetoothProfile;  ==> Represents a Bluetooth profile (like A2DP, HFP) and its connection states.
+import android.bluetooth.IBluetooth;
+import android.bluetooth.IBluetoothCallback;
+import android.bluetooth.IBluetoothManager;
+import android.bluetooth.IBluetoothManagerCallback;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.Context;   ==> 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Binder;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.ParcelFileDescriptor;
+import android.os.ParcelUuid;
+import android.os.Process;
+import android.os.RemoteCallbackList;
+import android.os.RemoteException;
+import android.provider.Settings;
+import android.util.Log;
+import android.util.Pair;
+import com.android.bluetooth.a2dp.A2dpService;
+import com.android.bluetooth.hid.HidService;
+import com.android.bluetooth.hfp.HeadsetService;
+import com.android.bluetooth.hdp.HealthService;
+import com.android.bluetooth.pan.PanService;
+import com.android.bluetooth.R;
+import com.android.bluetooth.Utils;
+import com.android.bluetooth.btservice.RemoteDevices.DeviceProperties;
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.List;
+import android.content.pm.PackageManager;
+import android.os.ServiceManager;
 
-
+================================================================================================
+onCreate() 
+----------
 
 
 
