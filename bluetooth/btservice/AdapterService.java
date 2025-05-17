@@ -1,9 +1,9 @@
 1. AdapterService.java
 This is the main service class that manages the Bluetooth adapter lifecycle, profiles, bonding, and communication with native code.
 Learning this first gives you the big picture of how everything is wired together.
--------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------
 Overview of AdapterService.java
-==================================
+=================================
 What is this file about?
   
 Think of AdapterService.java as the Bluetooth adapter’s “manager” or “boss” inside Android.
@@ -16,7 +16,7 @@ Think of AdapterService.java as the Bluetooth adapter’s “manager” or “bo
 ==> It also manages permissions, settings, and other policy rules around Bluetooth usage.
 
 What main operations does it handle?
-======================================
+=====================================
 Service lifecycle management: ==> Starts and stops the Bluetooth service cleanly.
 Adapter state management: ==> Knows if Bluetooth is ON, OFF, or changing states.
 Profile management: ==> Starts/stops Bluetooth profiles, manages profile connections.
@@ -27,8 +27,9 @@ Broadcasting intents: ==> Sends system-wide broadcasts about Bluetooth events an
 
 Why is this important?
 Without this service, Android wouldn’t be able to manage Bluetooth devices, turn Bluetooth on/off, or even notify apps about Bluetooth events.
--------------------------------------------------------------------------------------------------------------------------------------------------------
-
+-------------------------------------------------------------------------------------------------------------------------------------------------
+AdapterService.java — Line-by-Line Explanation
+-----------------------------------------------
 
 
 
