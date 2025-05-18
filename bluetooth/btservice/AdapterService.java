@@ -333,3 +333,36 @@ It logs that a bind request was received.
 It returns mBinder, which acts like a doorway for the client to talk to the service.
 ---------------------------------------------------------------------------------------------------------
 =========================================================================================================
+Method4 --> start()
+---------------------
+✅ Code:
+public void start() {
+    DeviceConfig.addOnPropertiesChangedListener(
+        DeviceConfig.NAMESPACE_BLUETOOTH,
+        BackgroundThread.getExecutor(),
+        this
+    );
+    onPropertiesChanged(DeviceConfig.getProperties(DeviceConfig.NAMESPACE_BLUETOOTH));
+}
+
+🔍 Simple Explanation:
+The start() method registers a listener that gets notified whenever Bluetooth-related configuration properties change dynamically. 
+These properties are part of Android's DeviceConfig system.
+Then, it immediately fetches the current values of those configuration properties and processes them by calling onPropertiesChanged().
+
+  🛠️ Why is this used?
+It lets Qualcomm or Android OEMs push new behavior/tuning knobs dynamically to Bluetooth behavior—like:
+Timeout values,
+Retry limits,
+Feature toggles.
+All without rebuilding the Bluetooth APK or restarting the device.
+Makes Bluetooth more configurable and adaptable.
+---------------------------------------------------------------------------------------------------------
+=========================================================================================================
+Method5 --> init()
+-------------------
+
+
+
+
+  
