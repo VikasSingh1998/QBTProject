@@ -40,47 +40,6 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;  ==> Main class to control the local Bluetooth adapter (e.g. enabling/disabling).
 import android.bluetooth.BluetoothDevice;  ==> Represents a remote Bluetooth device (used for pairing, bonding, etc.).
 import android.bluetooth.BluetoothProfile;  ==> Represents a Bluetooth profile (like A2DP, HFP) and its connection states.
-import android.bluetooth.IBluetooth;
-import android.bluetooth.IBluetoothCallback;
-import android.bluetooth.IBluetoothManager;
-import android.bluetooth.IBluetoothManagerCallback;
-import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
-import android.content.Context;   ==> 
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Binder;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.ParcelFileDescriptor;
-import android.os.ParcelUuid;
-import android.os.Process;
-import android.os.RemoteCallbackList;
-import android.os.RemoteException;
-import android.provider.Settings;
-import android.util.Log;
-import android.util.Pair;
-import com.android.bluetooth.a2dp.A2dpService;
-import com.android.bluetooth.hid.HidService;
-import com.android.bluetooth.hfp.HeadsetService;
-import com.android.bluetooth.hdp.HealthService;
-import com.android.bluetooth.pan.PanService;
-import com.android.bluetooth.R;
-import com.android.bluetooth.Utils;
-import com.android.bluetooth.btservice.RemoteDevices.DeviceProperties;
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.List;
-import android.content.pm.PackageManager;
-import android.os.ServiceManager;
 
 =============================================================================================================
 onCreate()   ==>It is present in the AdapterService class -->  public class AdapterService extends Service{}
@@ -94,14 +53,14 @@ Write the code here later
         mAdapterProperties = new AdapterProperties(this,mRemoteDevices,mLooper);
         mAdapterStateMachine =  new AdapterState(this, mLooper);
         mBinder = new AdapterServiceBinder(this);
-        mJniCallbacks =  new JniCallbacks(mAdapterStateMachine, mAdapterProperties);
-        initNative();
-        mNativeAvailable=true;
-        mCallbacks = new RemoteCallbackList<IBluetoothCallback>();
-        //Load the name and address
-        getAdapterPropertyNative(AbstractionLayer.BT_PROPERTY_BDADDR);
-        getAdapterPropertyNative(AbstractionLayer.BT_PROPERTY_BDNAME);
-
+  
+        mUserManager = getNonNullSystemService(UserManager.class);
+        mAppOps = getNonNullSystemService(AppOpsManager.class);
+        mPowerManager = getNonNullSystemService(PowerManager.class);
+        mBatteryStatsManager = getNonNullSystemService(BatteryStatsManager.class);
+        mCompanionDeviceManager = getNonNullSystemService(CompanionDeviceManager.class);
+    
+        setAdapterService(this);
     }
 
 
@@ -251,6 +210,70 @@ It is the "messenger" or "gatekeeper" that lets apps, settings, or the system ta
 ----------------------------------------------------------------------------------------------
 ..............................................................................................
 
+🔹 mUserManager = getNonNullSystemService(UserManager.class);
+Gets an instance of UserManager
+Used to check user profiles, permissions, user restrictions (e.g., whether Bluetooth is allowed for the current user)
+
+🔹 mAppOps = getNonNullSystemService(AppOpsManager.class);
+Gets the AppOpsManager service
+Used to track app-level operations, like:
+Is this app allowed to use Bluetooth?
+Has this app turned on discovery mode, etc.?
+Ensures policy enforcement per app
+
+🔹 mPowerManager = getNonNullSystemService(PowerManager.class);
+Gets PowerManager
+Used to manage power-related states:
+Is the screen on?
+Is the device in power-saving mode?
+Do we need to delay Bluetooth operations?
+
+🔹 mBatteryStatusManager = getNonNullSystemService(BatteryStatsManager.class);
+Monitors battery stats
+Qualcomm may use it to:
+Avoid Bluetooth operations when battery is low
+
+Collect metrics
+🔹 mCompanionDeviceManager = getNonNullSystemService(CompanionDeviceManager.class);
+Used to manage companion devices (like smartwatches, fitness trackers, etc.)
+Ensures priority and fast reconnection with these devices
+
+🔹 setAdapterService(this);
+Registers this AdapterService as the global instance
+Usually used by other static classes to fetch the running instance of Bluetooth service
+-------------------------------------------------------------------------------------------------
+.................................................................................................
+final @NonNull <T> T getNonNullSystemService(@NonNull Class<T> clazz)
+{
+return requireNonNull(getSystemService(clazz));
+}
+
+🔍 What is clazz?
+clazz is a parameter of type Class<T>.
+It represents the class type of the system service you want to retrieve.
+For example:
+If you pass PowerManager.class, you're asking for the PowerManager system service.
+If you pass UserManager.class, you're asking for the UserManager service.
+
+🔁 Example usage:
+PowerManager pm = getNonNullSystemService(PowerManager.class);
+UserManager um = getNonNullSystemService(UserManager.class);
+
+So, in those lines from onCreate():
+mPowerManager = getNonNullSystemService(PowerManager.class);
+→ This means: Get me the PowerManager service, and throw an error if it's null.
+......................................
+💡 Why use clazz?
+Because you want a generic method that works for any service type. 
+Using Class<T> clazz allows it to:
+Accept any system service class type,
+And return the correct object cast automatically to that type.
+-----------------------------------------------------------------------------------------
+.........................................................................................
 
 
 
+
+
+
+  
