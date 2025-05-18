@@ -100,11 +100,12 @@ Callback handler for native (C++) code (JniCallbacks)
 State machines for bonding and adapter state
 Connects to the native C++ Bluetooth stack using initNative().
 It’s like preparing your tools before starting Bluetooth work.
--------------------------------------------------------------------------------------------------------------
+..................................................................................................
 Explanation
 -----------
 super.onCreate(): ==> Calls the parent Service class's onCreate() method. Standard Android lifecycle.
----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+....................................................................................................
 mRemoteDevices = new RemoteDevices(this);     ==> older version, 
 mRemoteDevices —> Manages all known or paired remote Bluetooth devices.
 mRemoteDevices = new RemoteDevices(this); ==> Initializes the class that keeps track of all connected/paired Bluetooth devices.
@@ -141,3 +142,41 @@ Bluetooth events (like device connected, paired, disconnected) are asynchronous,
 By passing mLooper, you make sure everything runs in order, safely, on the right thread. ✅
 It tells RemoteDevices which thread to use for its background work.
 --------------------------------------------------------------------------------------------------
+..................................................................................................
+✅ mAdapterProperties = new AdapterProperties(this);   ==> this was there in the older version of the code.
+In the new version of the Qualcomm code ======> mAdapterProperties = new AdapterProperties(this, mRemoteDevices, mLooper);
+-------------
+Exaplanation: 
+🔍 What is AdapterProperties?
+This is a helper class used to manage and store basic Bluetooth adapter information, such as:
+==> Local Bluetooth device name
+==> MAC address
+==> Class of device (e.g., phone, headset)
+==> Scan mode (e.g., discoverable, connectable)
+==> Adapter state (ON, OFF, etc.)
+It communicates with the native layer to keep this info updated.
+
+🧠 Why it's created in onCreate()?
+The AdapterService (main Bluetooth service) needs access to all Bluetooth properties — so it sets up AdapterProperties as soon as the service starts.
+By passing this (context), the class can access Android system services, permissions, and logs.
+..............................................
+📌 What actually happens:
+✅ mRemoteDevices:
+This object contains information about remote Bluetooth devices (phones, headsets, etc.).
+AdapterProperties will call methods on this object when it detects a change in remote device state (e.g., name change, pairing state).
+So, yes, AdapterProperties can update or modify data inside mRemoteDevices.
+
+✅ mLooper:
+This provides a message-processing thread loop.
+AdapterProperties uses it to schedule or run code on a specific thread (usually to avoid thread-safety issues).
+It’s not updated, just used.
+-------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
