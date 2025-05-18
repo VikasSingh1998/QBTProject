@@ -234,6 +234,20 @@ public class AdapterServiceBinder extends IBluetooth.Stub {
 }
 IBluetooth.Stub is generated from the IBluetooth.aidl file.
 This makes AdapterServiceBinder the official IPC interface to the Bluetooth service.
+..........................................................
+🎯 Purpose of mBinder = new AdapterServiceBinder(this);
+Let's break it down:
+this refers to the current instance of AdapterService.
+AdapterServiceBinder takes this reference to call internal service methods.
+We assign the created binder object to mBinder.
+So now, mBinder is ready to handle external Bluetooth API calls.
+..............
+🧱 What is AdapterServiceBinder.java?
+AdapterServiceBinder is the Java class that handles all Bluetooth IPC (inter-process communication) 
+between the Android system and the Bluetooth service (AdapterService).
+
+In simpler words:
+It is the "messenger" or "gatekeeper" that lets apps, settings, or the system talk to the Bluetooth service running in the background.
 ----------------------------------------------------------------------------------------------
 ..............................................................................................
 
