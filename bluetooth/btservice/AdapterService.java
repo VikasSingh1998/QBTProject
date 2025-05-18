@@ -87,6 +87,20 @@ onCreate()   ==>It is present in the AdapterService class -->  public class Adap
 --------------------------------------------------------------------------------------------------------------
 Write the code here later
 
+✅ What onCreate() Does — Simple Explanation:
+In Android, onCreate() is called once when the Bluetooth service starts.
+It acts like the initial setup function.
+  
+In the case of AdapterService.java, the onCreate() method:
+Prepares the system to manage Bluetooth functionality.
+Initializes all helper components like:
+Device manager (RemoteDevices)
+Bluetooth adapter properties (AdapterProperties)
+Callback handler for native (C++) code (JniCallbacks)
+State machines for bonding and adapter state
+Connects to the native C++ Bluetooth stack using initNative().
+It’s like preparing your tools before starting Bluetooth work.
+-------------------------------------------------------------------------------------------------------------
 Explanation
 -----------
 super.onCreate(): ==> Calls the parent Service class's onCreate() method. Standard Android lifecycle.
