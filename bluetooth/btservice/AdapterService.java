@@ -171,10 +171,30 @@ This provides a message-processing thread loop.
 AdapterProperties uses it to schedule or run code on a specific thread (usually to avoid thread-safety issues).
 It’s not updated, just used.
 -------------------------------------------------------------------------------------------------------------------------
+✅ New Qualcomm-style (latest code):
+mAdapterStateMachine = new AdapterState(this, mLooper);
+-.........................................
+Explanation: 
+📌 Purpose of AdapterState
+The AdapterState class is essentially a state machine that tracks and controls the lifecycle of the Bluetooth adapter (not individual devices).
+It manages states like:
+STATE_OFF
+STATE_TURNING_ON
+STATE_ON
+STATE_TURNING_OFF
 
-
-
-
+So, it's the brain behind:
+🟢 Bluetooth ON
+🔴 Bluetooth OFF
+⚙️ Ongoing transitions
+....................................
+🔁 Why pass mLooper now?
+Qualcomm might have optimized the code such that:
+AdapterState does not directly need AdapterProperties.
+Instead, it just needs Looper to run its state transitions on the correct thread.
+All other property interactions can be done indirectly (via callbacks or service).
+This improves modularity, testability, and thread safety.
+---------------------------------------------------------------------------------------
 
 
 
