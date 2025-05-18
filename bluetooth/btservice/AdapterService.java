@@ -86,6 +86,24 @@ import android.os.ServiceManager;
 onCreate()   ==>It is present in the AdapterService class -->  public class AdapterService extends Service{}
 --------------------------------------------------------------------------------------------------------------
 Write the code here later
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        LOG.d(TAG,"onCreate()");
+        mRemoteDevices = new RemoteDevices(this,mLooper);
+        mAdapterProperties = new AdapterProperties(this,mRemoteDevices,mLooper);
+        mAdapterStateMachine =  new AdapterState(this, mLooper);
+        mBinder = new AdapterServiceBinder(this);
+        mJniCallbacks =  new JniCallbacks(mAdapterStateMachine, mAdapterProperties);
+        initNative();
+        mNativeAvailable=true;
+        mCallbacks = new RemoteCallbackList<IBluetoothCallback>();
+        //Load the name and address
+        getAdapterPropertyNative(AbstractionLayer.BT_PROPERTY_BDADDR);
+        getAdapterPropertyNative(AbstractionLayer.BT_PROPERTY_BDNAME);
+
+    }
+
 
 ✅ What onCreate() Does — Simple Explanation:
 In Android, onCreate() is called once when the Bluetooth service starts.
@@ -195,7 +213,29 @@ Instead, it just needs Looper to run its state transitions on the correct thread
 All other property interactions can be done indirectly (via callbacks or service).
 This improves modularity, testability, and thread safety.
 ---------------------------------------------------------------------------------------
+.......................................................................................
+mBinder = new AdapterServiceBinder(this);
+..........................................
+🔍 What is mBinder?
+mBinder is a member variable of AdapterService:   ===> private AdapterServiceBinder mBinder;
+It holds an instance of AdapterServiceBinder.
 
+🧱 What is AdapterServiceBinder?
+AdapterServiceBinder is a class that extends the Android Binder interface:
+
+public class AdapterServiceBinder extends IBluetooth.Stub {
+    private final AdapterService mService;
+    AdapterServiceBinder(AdapterService service) {
+        mService = service;
+    }
+
+    // Methods exposed to external callers like:
+    // enable(), disable(), getBondedDevices(), etc.
+}
+IBluetooth.Stub is generated from the IBluetooth.aidl file.
+This makes AdapterServiceBinder the official IPC interface to the Bluetooth service.
+----------------------------------------------------------------------------------------------
+..............................................................................................
 
 
 
